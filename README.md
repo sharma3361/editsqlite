@@ -76,7 +76,7 @@ only the first time you run a join/`GROUP BY`, then runtime-cached.
 
 There's a companion **VS Code extension** that opens `.sqlite` / `.db` files as a
 custom editor, reusing this repo's `sqlite.js` reader — pure JS, no native
-dependencies, works in web VS Code too. See `../editsqlite-vscode/`.
+dependencies, works in web VS Code too. See `the separate editsqlite-vscode repository (not yet published)`.
 
 ## Credits
 

@@ -6,6 +6,3 @@
 /sqlite      /          301
 /convert     /          301
 /sheets      /blog/     301
-
-# the build spec ships in the folder but must never be served
-/CLAUDE.md    /    301
