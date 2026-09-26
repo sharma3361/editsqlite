@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSV to SQLite Online — Convert CSV to a .sqlite File In Your Browser</title>
+<meta name="description" content="Convert a CSV to a real SQLite database in your browser. The import wizard reads each column and types it — INTEGER, REAL or TEXT — before the table is created. Nothing uploads; the .sqlite is certified by the official engine.">
+<link rel="canonical" href="https://editsqlite.com/convert/csv-to-sqlite/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="CSV to SQLite Online — Convert CSV to a .sqlite File In Your Browser">
+<meta property="og:description" content="Turn a CSV into a real SQLite database on your device. Each column is typed before the table is built; nothing uploads; the export passes PRAGMA integrity_check.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/convert/csv-to-sqlite/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Convert a CSV to a SQLite database in the browser",
+  "description": "Open a CSV in editsqlite, let the import wizard type each column, then export a fresh .sqlite file — all on your own device.",
+  "totalTime": "PT2M",
+  "tool": [{ "@type": "HowToTool", "name": "A modern web browser" }],
+  "supply": [{ "@type": "HowToSupply", "name": "A .csv file" }],
+  "step": [
+    { "@type": "HowToStep", "name": "Open the CSV", "text": "Open editsqlite and choose Import CSV, or drop your .csv onto the page." },
+    { "@type": "HowToStep", "name": "Check the column types", "text": "The wizard surveys each column and guesses INTEGER, REAL or TEXT. Override any guess with the dropdown before creating the table." },
+    { "@type": "HowToStep", "name": "Create the table", "text": "Create the table from the CSV; it opens in the editor grid where you can fix cells or run SQL." },
+    { "@type": "HowToStep", "name": "Export the .sqlite", "text": "Click the certified .sqlite export. A fresh database file is built in the tab and downloaded — nothing is uploaded." }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is my CSV uploaded to a server?", "acceptedAnswer": { "@type": "Answer", "text": "No. editsqlite is a static site with no server behind it. Your CSV is read in the browser tab, the table is built in memory, and the .sqlite lands in your downloads folder. Turn off your network and it still works." } },
+    { "@type": "Question", "name": "How are column types decided?", "acceptedAnswer": { "@type": "Answer", "text": "The import wizard reads the whole column before deciding: if every non-empty value is a whole number you get INTEGER, a decimal anywhere gives REAL, and one stray word makes it TEXT. The guess is only a default — each column has a dropdown you can override, and a value that can't fit the chosen type is kept as text rather than mangled." } },
+    { "@type": "Question", "name": "Does it handle commas and line breaks inside fields?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The parser follows RFC-4180 quoting, so quoted fields containing commas, line breaks and doubled quotes parse correctly. CRLF and bare CR both end a row." } },
+    { "@type": "Question", "name": "Is the resulting .sqlite a real SQLite file?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — it is written byte by byte by our own SQLite writer and passes the official engine's PRAGMA integrity_check. You can open it in any SQLite tool, and the engine will insert its own rows into it." } }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../" class="here">Convert</a>
+    <a href="../../blog/">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <p class="meta"><a href="../">Converters</a> · CSV → SQLite</p>
+  <h1>Convert CSV to SQLite — in your browser, nothing uploaded</h1>
+
+  <p>A CSV is a flat sheet of text; a SQLite database is a typed, queryable file. The gap between them is usually a Python script or a command-line import that makes you declare every column by hand. Here it's a two-minute job in a browser tab: open the CSV, glance at the types the wizard picked, and download a real <b>.sqlite</b> file. Your data never leaves the machine.</p>
+
+  <figure>
+    <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A CSV of rows passes through a column-typing wizard and becomes a SQLite file">
+      <rect width="640" height="210" fill="#ffffff"/>
+      <g font-family="monospace" font-size="11" fill="#1a1d24">
+        <g stroke="#6b7280" stroke-width="1.4" fill="none">
+          <rect x="24" y="55" width="150" height="90"/>
+          <rect x="255" y="45" width="150" height="110"/>
+          <rect x="486" y="55" width="130" height="90"/>
+        </g>
+        <text x="99" y="45" text-anchor="middle" fill="#4f46e5">name,qty,price</text>
+        <text x="36" y="80">Widget,42,4.20</text>
+        <text x="36" y="98">Gadget,7,19.99</text>
+        <text x="36" y="116">Bolt,500,0.05</text>
+        <text x="330" y="35" text-anchor="middle" fill="#4f46e5">type each column</text>
+        <text x="268" y="80">name → TEXT</text>
+        <text x="268" y="100">qty → INTEGER</text>
+        <text x="268" y="120">price → REAL</text>
+        <text x="551" y="45" text-anchor="middle" fill="#4f46e5">a real .sqlite</text>
+        <text x="500" y="86">SQLite</text>
+        <text x="500" y="104">format 3</text>
+        <text x="500" y="128" fill="#2e9e5b">✓ integrity ok</text>
+        <g stroke="#4f46e5" stroke-width="2" fill="none">
+          <path d="M180 100 L250 100 M244 95 L251 100 L244 105"/>
+          <path d="M410 100 L481 100 M475 95 L482 100 L475 105"/>
+        </g>
+      </g>
+      <text x="320" y="188" font-family="monospace" font-size="11" fill="#6b7280" text-anchor="middle">the whole column is read before its type is chosen — and you can override every guess</text>
+    </svg>
+    <figcaption>the CSV goes in as text; a typed, certified database comes out.</figcaption>
+  </figure>
+
+  <h2>How to convert a CSV to SQLite</h2>
+  <ol>
+    <li><b>Open your CSV.</b> On the editor, click <b>Import CSV</b> — or just drop the <b>.csv</b> onto the page. You can also paste rows straight into the wizard.</li>
+    <li><b>Check the column types.</b> The wizard surveys every column and proposes <code>INTEGER</code>, <code>REAL</code> or <code>TEXT</code>. Each has a dropdown — override any guess before the table is built.</li>
+    <li><b>Create the table.</b> Name it and create it. It opens in the grid, where you can fix a cell, add a column or run a quick <code>SELECT</code> before exporting.</li>
+    <li><b>Export the <b>.sqlite</b>.</b> Click <b>⬇ .sqlite (certified)</b>. A fresh database file is assembled in the tab and downloaded.</li>
+  </ol>
+
+  <p><a class="draftbtn solid" href="../../?from=csv">Convert a CSV now →</a></p>
+
+  <h2>Why the column-typing step matters</h2>
+  <p>Most CSV importers either make everything text or guess from the first row and get it wrong the moment row 900 breaks the pattern. editsqlite reads the <em>whole</em> column before deciding: every non-empty value has to agree. All whole numbers give you <code>INTEGER</code>; a single decimal anywhere makes it <code>REAL</code>; one stray word makes it <code>TEXT</code>. The guess is a starting point, not a verdict — you set the final type yourself, and a value that can't honour it is kept as text instead of being mangled, the same forgiveness SQLite itself shows.</p>
+
+  <h2>Good to know</h2>
+  <ul>
+    <li>Quoted fields with commas, line breaks and doubled quotes parse correctly (RFC-4180).</li>
+    <li>Empty cells become <code>NULL</code>, not empty strings — so <code>IS NULL</code> works as you'd expect afterward.</li>
+    <li>Very wide single rows (over ~4KB) aren't supported yet; ordinary spreadsheet rows are fine.</li>
+    <li>The finished database is a normal SQLite file — open it anywhere, and it passes <code>PRAGMA integrity_check</code>.</li>
+  </ul>
+
+  <h2>Other conversions</h2>
+  <div class="sheetlist">
+    <a href="../sqlite-to-csv/"><b>SQLite → CSV</b><span>The round trip: open a .sqlite and export a table back to CSV.</span></a>
+    <a href="../mysql-to-sqlite/"><b>MySQL → SQLite</b><span>Open a mysqldump .sql file and leave with a working .sqlite.</span></a>
+    <a href="../"><b>All converters</b><span>CSV, MySQL, Postgres and SQLite — every direction the tool handles.</span></a>
+  </div>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../">Convert</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

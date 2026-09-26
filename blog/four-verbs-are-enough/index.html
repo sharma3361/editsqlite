@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Four Statements Are Enough — editsqlite</title>
+<meta name="description" content="SELECT, UPDATE, DELETE, INSERT with an honest WHERE — what a hand-written mini-SQL engine covers, what it refuses, and why small scope beats a WebAssembly mountain for editing.">
+<link rel="canonical" href="https://editsqlite.com/blog/four-verbs-are-enough/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="Four Statements Are Enough — editsqlite">
+<meta property="og:description" content="SELECT, UPDATE, DELETE, INSERT with an honest WHERE — what a hand-written mini-SQL engine covers, what it refuses, and why small scope beats a WebAssembly mountain for editing.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/blog/four-verbs-are-enough/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Four statements are enough",
+  "description": "SELECT, UPDATE, DELETE, INSERT with an honest WHERE — what a hand-written mini-SQL engine covers, what it refuses, and why small scope beats a WebAssembly mountain for editing.",
+  "datePublished": "2026-07-05",
+  "dateModified": "2026-07-05",
+  "author": { "@type": "Person", "name": "the engineer" },
+  "publisher": { "@type": "Organization", "name": "editsqlite", "url": "https://editsqlite.com/" },
+  "mainEntityOfPage": "https://editsqlite.com/blog/four-verbs-are-enough/",
+  "image": "https://editsqlite.com/og.png"
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../../blog/" class="here">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <h1>Four statements are enough</h1>
+  <p class="meta">guide · 5 jul 2026</p>
+
+  <figure>
+    <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A small toolbox with four labeled tools next to a huge crate labeled full engine">
+      <rect width="640" height="300" fill="#ffffff"/>
+      <g stroke="#4f46e5" stroke-width="1.6" fill="none">
+        <rect x="70" y="110" width="220" height="100" rx="6"/>
+        <path d="M70 110 L100 80 L320 80 L290 110" />
+      </g>
+      <g font-family="monospace" font-size="12" fill="#4f46e5" text-anchor="middle">
+        <text x="125" y="145">SELECT</text><text x="235" y="145">UPDATE</text>
+        <text x="125" y="185">DELETE</text><text x="235" y="185">INSERT</text>
+      </g>
+      <text x="180" y="240" font-family="monospace" font-size="11" fill="#6b7280" text-anchor="middle">the editor's toolbox — every tool explainable</text>
+      <g stroke="#6b7280" stroke-width="1.6" fill="none">
+        <rect x="400" y="60" width="190" height="150" rx="4"/>
+        <line x1="400" y1="100" x2="590" y2="100"/><line x1="400" y1="140" x2="590" y2="140"/><line x1="400" y1="175" x2="590" y2="175"/>
+      </g>
+      <g font-family="monospace" font-size="10" fill="#6b7280" text-anchor="middle">
+        <text x="495" y="85">query planner</text>
+        <text x="495" y="125">join optimizer · GROUP BY</text>
+        <text x="495" y="162">window functions · CTEs</text>
+        <text x="495" y="197">the mountain (magnificent, elsewhere)</text>
+      </g>
+      <text x="320" y="278" font-family="monospace" font-size="11" fill="#6b7280" text-anchor="middle">scope is a design decision, not a shortage</text>
+    </svg>
+    <figcaption>the toolbox and the mountain, sized honestly.</figcaption>
+  </figure>
+
+  <p>The console in <a href="../../">the editor</a> runs a SQL engine that is roughly three hundred lines long, written by hand: a tokenizer, a recursive-descent parser, and predicates compiled into functions. Mentioning that next to SQLite — two hundred thousand lines refined over a quarter century — invites an obvious question: why not just ship the real engine as a WebAssembly blob, as several fine tools do? This is the answer, and it's about scope as a design material.</p>
+
+  <h2>What editing actually asks</h2>
+  <p>Watch someone edit a database (as opposed to <em>analyze</em> one) and the queries are strikingly plain: find the rows where the email is misspelled; change these statuses; delete the test entries; add three records. That's SELECT with a WHERE, UPDATE, DELETE, INSERT — plus ORDER BY and LIMIT to see what you're doing, LIKE and IS NULL because real data is messy, AND/OR/NOT with parentheses because conditions compose. Our engine covers exactly that list, and its full behavior — including SQL's classic lesson that UPDATE without WHERE means <em>everywhere</em> (undo has your back here; production servers are less forgiving) — fits in a person's head. Joins, GROUP BY, subqueries and window functions are analysis tools; they're marked out of scope and pointed at your real engine, one export away.</p>
+
+  <h2>The price of the mountain</h2>
+  <p>Shipping real SQLite as WebAssembly is a legitimate choice — but it costs a megabyte-scale binary on every load, and something subtler: the tool's behavior becomes a black box even to its own author. Three hundred hand-written lines load instantly, work offline from the first visit, and every quirk is inspectable, explainable and fixable by the person who wrote it. There's a quiet parallel to the whole idea here: the difference between <em>using</em> a format or language and <em>understanding</em> it is the difference between a dependency and a capability. Four statements, honestly implemented, turn out to be a capability. The mountain stays magnificent — and stays, by design, one export away.</p>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

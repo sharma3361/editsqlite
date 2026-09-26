@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — editsqlite</title>
+<meta name="description" content="Files that wouldn't open or export, console queries that surprised you, and feature requests — reach the person who built editsqlite.">
+<link rel="canonical" href="https://editsqlite.com/contact/">
+<meta name="theme-color" content="#f6f7f9">
+<meta name="robots" content="noindex, follow">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../styles.css">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="mark" href="../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../">Editor</a>
+    <a href="../blog/">Guides</a>
+    <a href="../contact/" class="here">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+  <h2 class="callout" style="margin-top:30px">Contact</h2>
+  <p class="callsub">contact@editsqlite.com — answered by the person who built it</p>
+  <p><b>Worth writing about:</b> a database or dump that wouldn't open (quote the exact refusal — the errors name their reasons — and where the file came from). An export the official engine rejected: that's a top-priority defect against the certification bar, so describe everything and attach nothing. Console queries that surprised you — odd behavior in three hundred lines is findable and fixable within days. And feature votes: joins in the console, overflow-row writing, and index regeneration are all on the maybe list, waiting on demand.</p>
+  <p><b>Out of scope, honestly:</b> connecting to live MySQL or Postgres servers — browsers can't speak those protocols and shouldn't hold your credentials; dump, edit, reload is the honest loop. Editing encrypted databases — keys stay between you and your own software. And recovering corrupted files — rebuilding prevents corruption here, but repairing damage from elsewhere is forensics, an entirely different job.</p>
+</div>
+
+<footer class="border">
+  <a href="../">Editor</a>
+  <a href="../blog/">Guides</a>
+  <a href="../privacy/">Privacy</a>
+  <a href="../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

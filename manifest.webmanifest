@@ -1,0 +1,14 @@
+{
+  "name": "editsqlite — Database Editor",
+  "short_name": "editsqlite",
+  "description": "Open, edit and re-export SQLite databases and SQL dumps on your device — grid editing, SQL console, engine-certified output. No upload.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7f9",
+  "theme_color": "#f6f7f9",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

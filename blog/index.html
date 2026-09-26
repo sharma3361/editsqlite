@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guides — editsqlite</title>
+<meta name="description" content="Building the hand-written SQLite writer, the rebuild-over-in-place-editing argument, and what four SQL statements honestly cover.">
+<link rel="canonical" href="https://editsqlite.com/blog/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="Guides — editsqlite">
+<meta property="og:description" content="Building the hand-written SQLite writer, the rebuild-over-in-place-editing argument, and what four SQL statements honestly cover.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://editsqlite.com/blog/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../styles.css">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../">Editor</a>
+    <a href="../blog/" class="here">Guides</a>
+    <a href="../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+  <h2 class="callout" style="margin-top:30px">Build notes</h2>
+  <p class="callsub">longer reads on how the editor works inside</p>
+  <div class="sheetlist">
+    <a href="writing-a-database-by-hand/">
+      <b>Writing a database by hand</b>
+      <span>Records, pages, trees and one off-by-one that pointed a whole b-tree the wrong way.</span>
+      <time datetime="2026-07-05">5 jul 2026</time>
+    </a>
+    <a href="regeneration-not-surgery/">
+      <b>Rebuild, don't operate in place</b>
+      <span>Why safe editing never touches the original file — architecture with scars behind it.</span>
+      <time datetime="2026-07-05">5 jul 2026</time>
+    </a>
+    <a href="four-verbs-are-enough/">
+      <b>Four statements are enough</b>
+      <span>What a hand-written mini-SQL engine covers, refuses, and teaches.</span>
+      <time datetime="2026-07-05">5 jul 2026</time>
+    </a>
+  </div>
+</div>
+
+<footer class="border">
+  <a href="../">Editor</a>
+  <a href="../blog/">Guides</a>
+  <a href="../privacy/">Privacy</a>
+  <a href="../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

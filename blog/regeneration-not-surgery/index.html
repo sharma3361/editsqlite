@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rebuild, Don't Operate In Place — editsqlite</title>
+<meta name="description" content="Editing a database file in place is how corruption happens. The safe approach reads once, edits a copy, and rebuilds the whole file from scratch — an argument with scars behind it.">
+<link rel="canonical" href="https://editsqlite.com/blog/regeneration-not-surgery/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="Rebuild, Don't Operate In Place — editsqlite">
+<meta property="og:description" content="Editing a database file in place is how corruption happens. The safe approach reads once, edits a copy, and rebuilds the whole file from scratch — an argument with scars behind it.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/blog/regeneration-not-surgery/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Rebuild, don't operate in place",
+  "description": "Editing a database file in place is how corruption happens. The safe approach reads once, edits a copy, and rebuilds the whole file from scratch — an argument with scars behind it.",
+  "datePublished": "2026-07-05",
+  "dateModified": "2026-07-05",
+  "author": { "@type": "Person", "name": "the engineer" },
+  "publisher": { "@type": "Organization", "name": "editsqlite", "url": "https://editsqlite.com/" },
+  "mainEntityOfPage": "https://editsqlite.com/blog/regeneration-not-surgery/",
+  "image": "https://editsqlite.com/og.png"
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../../blog/" class="here">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <h1>Rebuild, don't operate in place</h1>
+  <p class="meta">guide · 5 jul 2026</p>
+
+  <figure>
+    <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two paths: editing a file in place with a crack appearing, versus copying to a fresh clean file">
+      <rect width="640" height="300" fill="#ffffff"/>
+      <g font-family="monospace" font-size="12">
+        <g stroke="#d97706" stroke-width="1.6" fill="none">
+          <rect x="60" y="70" width="160" height="110" rx="4"/>
+        </g>
+        <path d="M100 70 L130 130 L115 180" stroke="#d97706" stroke-width="2" fill="none" stroke-dasharray="6 4"/>
+        <text x="140" y="55" fill="#d97706" text-anchor="middle">edit in place</text>
+        <text x="140" y="205" fill="#d97706" text-anchor="middle" font-size="10">one wrong byte → the crack</text>
+        <g stroke="#4f46e5" stroke-width="1.6" fill="none">
+          <rect x="380" y="70" width="100" height="110" rx="4"/>
+          <rect x="510" y="70" width="100" height="110" rx="4"/>
+        </g>
+        <path d="M485 125 L505 125 M500 121 L506 125 L500 129" stroke="#4f46e5" stroke-width="2" fill="none"/>
+        <text x="430" y="55" fill="#4f46e5" text-anchor="middle">original (read-only)</text>
+        <text x="560" y="55" fill="#4f46e5" text-anchor="middle">fresh build</text>
+        <text x="495" y="205" fill="#4f46e5" text-anchor="middle" font-size="10">nothing touched → nothing to crack</text>
+      </g>
+      <text x="320" y="272" font-family="monospace" font-size="11" fill="#6b7280" text-anchor="middle">editing in place is faster until the day it isn't. rebuilding is boring forever.</text>
+    </svg>
+    <figcaption>two approaches, one of which has a worst day.</figcaption>
+  </figure>
+
+  <p>Every tool that edits precious files chooses between two approaches, and the choice matters more than any feature. <em>In-place editing</em> opens the file and modifies its bytes directly — efficient, immediate, and carrying a catastrophic failure mode: interrupt it mid-write, or get one offset wrong, and the file dies in a way no undo can reach. <em>Rebuilding</em> reads once, edits a working copy, and writes an entirely new file. Slower in theory. Boring in practice. Boring is the feature.</p>
+
+  <h2>Why databases punish in-place edits hardest</h2>
+  <p>A database file is a web of self-references — pages pointing at pages, offsets promising "the row lives 3,847 bytes in." In-place edits have to update every promise consistently, mid-flight, often while keeping a b-tree balanced. Real engines manage it with journals, write-ahead logs and decades of hardening; that machinery is most of what a database engine <em>is</em>. A lightweight editor attempting the same surgery without the machinery is a corruption generator with a nice UI — and the wreckage shows up silently, weeks later, when some untouched-looking table turns out to share a page with the edit. That's why our reader refuses to write anything at all, and why the editor rebuilds rather than reaches in.</p>
+
+  <h2>The rebuild contract</h2>
+  <p>The contract has three clauses. <b>The original is read-only</b> — not by policy but by code path; no write ever targets it, so the worst possible outcome of any bug here is a bad <em>export</em>, never a damaged source. <b>The copy is the workspace</b> — grid edits, SQL mutations, undo and redo all run on memory, checkpointed and reversible. <b>Every save is a full rebuild</b> — the writer lays out every page fresh, which incidentally explains why exports often shrink (no dead pages, no fragmentation) and why each one can face the official engine's integrity check anew. In-place editing asks you to trust the surgeon's hands; rebuilding only asks you to inspect the new file before you rely on it — and it hands you the inspection report, stamped, with every export.</p>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

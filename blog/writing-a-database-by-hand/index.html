@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing a Database by Hand — editsqlite</title>
+<meta name="description" content="Reading SQLite taught us the format; writing it taught us humility: encode records, pack pages, stack trees, stamp the header — then let the official engine judge every byte.">
+<link rel="canonical" href="https://editsqlite.com/blog/writing-a-database-by-hand/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="Writing a Database by Hand — editsqlite">
+<meta property="og:description" content="Reading SQLite taught us the format; writing it taught us humility: encode records, pack pages, stack trees, stamp the header — then let the official engine judge every byte.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/blog/writing-a-database-by-hand/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Writing a database by hand",
+  "description": "Reading SQLite taught us the format; writing it taught us humility: encode records, pack pages, stack trees, stamp the header — then let the official engine judge every byte.",
+  "datePublished": "2026-07-05",
+  "dateModified": "2026-07-05",
+  "author": { "@type": "Person", "name": "the engineer" },
+  "publisher": { "@type": "Organization", "name": "editsqlite", "url": "https://editsqlite.com/" },
+  "mainEntityOfPage": "https://editsqlite.com/blog/writing-a-database-by-hand/",
+  "image": "https://editsqlite.com/og.png"
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../../blog/" class="here">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <h1>Writing a database by hand</h1>
+  <p class="meta">guide · 5 jul 2026</p>
+
+  <figure>
+    <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="An assembly line: values become records, records fill pages, pages stack into a tree, a header is stamped">
+      <rect width="640" height="300" fill="#ffffff"/>
+      <g font-family="monospace" font-size="11" fill="#1a1d24">
+        <g stroke="#6b7280" stroke-width="1.4" fill="none">
+          <rect x="30" y="60" width="110" height="54"/>
+          <rect x="185" y="60" width="110" height="54"/>
+          <rect x="340" y="45" width="110" height="84"/>
+          <rect x="495" y="60" width="110" height="54"/>
+        </g>
+        <text x="85" y="50" text-anchor="middle" fill="#4f46e5">values</text>
+        <text x="45" y="85">7, 'Ada',</text><text x="45" y="100">null, 3.5</text>
+        <text x="240" y="50" text-anchor="middle" fill="#4f46e5">record</text>
+        <text x="200" y="85">[hdr][types]</text><text x="200" y="100">[bytes...]</text>
+        <text x="395" y="35" text-anchor="middle" fill="#4f46e5">pages + tree</text>
+        <g stroke="#4f46e5" stroke-width="1.2" fill="none">
+          <rect x="380" y="55" width="30" height="18"/>
+          <rect x="352" y="95" width="30" height="18"/><rect x="395" y="95" width="30" height="18"/>
+          <line x1="392" y1="73" x2="367" y2="95"/><line x1="398" y1="73" x2="410" y2="95"/>
+        </g>
+        <text x="550" y="50" text-anchor="middle" fill="#4f46e5">header</text>
+        <text x="508" y="85">"SQLite</text><text x="508" y="100">format 3"</text>
+        <g stroke="#4f46e5" stroke-width="2" fill="none">
+          <path d="M145 87 L180 87 M175 83 L181 87 L175 91"/>
+          <path d="M300 87 L335 87 M330 83 L336 87 L330 91"/>
+          <path d="M455 87 L490 87 M485 83 L491 87 L485 91"/>
+        </g>
+      </g>
+      <text x="320" y="200" font-family="monospace" font-size="13" fill="#d97706" text-anchor="middle">then the judge: sqlite3 → PRAGMA integrity_check → "ok"</text>
+      <text x="320" y="225" font-family="monospace" font-size="11" fill="#6b7280" text-anchor="middle">two letters, earned the hard way</text>
+      <text x="320" y="278" font-family="monospace" font-size="11" fill="#6b7280" text-anchor="middle">reading a format is comprehension. writing it is confession.</text>
+    </svg>
+    <figcaption>the assembly line, and the judge waiting at the end.</figcaption>
+  </figure>
+
+  <p>Our reader parses SQLite files by hand, and building that parser felt like fluency. Then the editor needed the opposite direction — <em>writing</em> databases from scratch — and that fluency turned out to be reading-level only. A parser can shrug at things it doesn't understand; a writer's every byte is a claim the official engine will audit without mercy. That asymmetry is the whole story here.</p>
+
+  <h2>The assembly line</h2>
+  <p>Writing runs the read pipeline backwards. Each row's values are encoded into a <em>record</em> — serial types chosen frugally (a boolean costs zero bytes; the integer 300 costs two; text costs its length), with header varints in front. Records pack into 4KB <em>leaf pages</em> from the tail forward, a pointer array growing from the head, until a page is full and the next begins. If a table outgrows one leaf, an <em>interior page</em> is stacked above it, holding "rowids up to N live in page P" signposts. Finally page one is assembled — the schema table describing every other table, plus the 100-byte header with its magic string, page size, counts and the UTF-8 declaration. Every offset computed, nothing borrowed.</p>
+
+  <h2>The bug that taught the lesson</h2>
+  <p>First full test: the engine's integrity check returned a page of accusations — rowids out of order, a double reference to page one, an orphaned page. The cause was one line: pages are numbered from 1, arrays from 0, and our child pointers were recorded one page off from where the children actually lived. A parser with that bug misreads one file and you debug it; a <em>writer</em> with that bug builds a thousand confidently corrupt files. Which is why the certification bar is external: not "our tests pass" but <b>the reference engine opens our output, walks 3,000 rows across 21 pages, answers aggregates correctly, and — the compliment we're proudest of — inserts its own rows into pages we laid out</b>. When the engine starts building on your foundation, the design holds.</p>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

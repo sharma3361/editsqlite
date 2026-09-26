@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQLite Editor Online — Open, Edit &amp; Export DB In Your Browser</title>
+<meta name="description" content="A database editor that runs in the tab: open SQLite files, .sql dumps or CSV, edit cells in a spreadsheet grid or run SQL, then export a fresh .sqlite, a dump in any dialect, or CSV. Nothing uploads; your original file is never written to.">
+<link rel="canonical" href="https://editsqlite.com/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="SQLite Editor Online — Open, Edit &amp; Export DB In Your Browser">
+<meta property="og:description" content="Open, edit and re-export databases entirely on your device — a spreadsheet grid, a hand-written SQL console, and a .sqlite writer the official engine's integrity check signs off on.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://editsqlite.com/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+
+<style>/* critical paint */
+html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css?v=el3">
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+
+<script type="application/ld+json">
+{ "@context": "https://schema.org", "@type": "WebSite", "name": "editsqlite", "url": "https://editsqlite.com/" }
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SQLite Database Editor",
+  "alternateName": "editsqlite",
+  "url": "https://editsqlite.com/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any (runs in the browser)",
+  "browserRequirements": "Any modern browser; no permissions needed",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": "Open SQLite databases .sql dumps (MySQL Postgres SQLite dialects) and CSV entirely on-device, CSV import wizard that surveys each column and auto-guesses INTEGER REAL or TEXT with per-column override before creating the table, edit cells in a spreadsheet grid with type inference, add delete and rename rows columns and tables, schema panel listing every table with its columns types and row counts plus add-column and rename-table controls, undo and redo, hand-written SQL console supporting SELECT UPDATE DELETE INSERT with WHERE ORDER BY and LIMIT, save console queries to a device-local list and re-run them in one tap with last-run timestamps, export a fresh .sqlite file written by hand that passes the official engine's integrity check, export SQL dumps in three dialects, CSV export, session autosave, originals never modified, no upload no account, offline PWA",
+  "description": "Free database editor that runs entirely in your browser: a SQLite reader, a three-dialect dump parser, a small SQL engine and a hand-written SQLite file writer. Open a file, edit it in a grid or by SQL, and export a fresh file. Nothing uploads."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How can a browser edit a database file safely?",
+      "acceptedAnswer": { "@type": "Answer", "text": "It never edits the file you gave it. Your database is read once into a working copy in the tab; every change — grid or SQL — happens on that copy; and saving builds a brand-new file from scratch with our own SQLite writer. Editing a database in place is how files get corrupted, so we simply don't: a rebuild can't damage a source it never touches. The writer's output passes PRAGMA integrity_check in the official SQLite engine, which is the bar we hold each export to." }
+    },
+    {
+      "@type": "Question",
+      "name": "What SQL does the console understand?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Two engines share one console. The four editing statements — SELECT (with WHERE, ORDER BY, LIMIT), UPDATE, DELETE and INSERT — run on a small engine written by hand: no download, instant, offline, and they mutate your data so undo and export work. Ask for more — a join, GROUP BY, an aggregate or a subquery — and editsqlite summons the real SQLite engine (WebAssembly), fetched only the first time you need it and used only to read; it never edits your data and never touches an export. So simple edits stay instant and jargon-free, while real analysis is one query away." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which files can I open?",
+      "acceptedAnswer": { "@type": "Answer", "text": ".sqlite / .db / .sqlite3 databases, read by the same hand-written parser the editor is built on; .sql dumps from mysqldump, pg_dump or sqlite3 .dump — including Postgres COPY blocks and each dialect's string escapes; and plain CSV, which lands as a fresh single-table database. You can also begin from a blank database and build it out row by row." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the CSV import wizard pick column types?",
+      "acceptedAnswer": { "@type": "Answer", "text": "It reads the whole column before it decides. Every non-empty value has to agree: all whole numbers give you INTEGER, a decimal anywhere gives you REAL, and one stray word makes the column TEXT. The guess is only a default — each column has a dropdown you can override before the table is created, and a value that can't fit the chosen type is kept as text instead of mangled, the same affinity forgiveness SQLite itself shows. Quoted fields with commas and line breaks parse correctly." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I keep queries I run often?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — name any console query and it's saved in this browser (IndexedDB, never uploaded). Each one re-runs in a single tap and remembers when you last ran it. It's a scratchpad for the SELECTs and UPDATEs you reach for again and again, not a server-side report feature; clear your site data and the saved list clears with it." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens to indexes, views and triggers?",
+      "acceptedAnswer": { "@type": "Answer", "text": "They're set aside honestly: table data is what this editor edits, and writing index b-trees that would lie about your edited rows is worse than leaving them out. On export you get your fresh .sqlite plus, if the source had them, a one-click recreate script (CREATE INDEX / CREATE VIEW statements) to run afterward — a single command in any SQLite tool, and safer than trusting a half-right index." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can it write SQL from plain English?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For the questions people actually ask a table, yes. Type something like “count by role”, “top 5 by salary”, “average salary by role”, “rows in London” or “salary over 90000”, and editsqlite turns it into a SQLite query. There's no AI model, no API key, no download and no network — it's a small built-in helper that reads your question and your columns and writes the SQL, instantly and offline. Being fully local, it can even glance at your data to work out that “London” lives in the city column. The query lands in the console for you to read and run yourself — it proposes, you approve. It won't parse every sentence; when it can't, it says so and suggests a phrasing." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my database uploaded anywhere?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Databases hold some of the most sensitive files people own — customers, messages, finances — and this is a static site with no server behind it: there is nowhere for an upload to go. The working copy lives in tab memory, the autosaved session in your browser's local storage, and exports in your downloads folder. Turn off your network and everything still works." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I convert between MySQL, Postgres and SQLite?",
+      "acceptedAnswer": { "@type": "Answer", "text": "That's the everyday move here: open a mysqldump file and leave with a working .sqlite; open a SQLite database and leave with a Postgres-flavored dump; open a CSV and leave with any of them. Data and structure carry across; engine-specific extras like stored procedures and exotic types are named and set aside rather than mistranslated." }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="mark" href="./">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="./" class="here">Editor</a>
+    <a href="convert/">Convert</a>
+    <a href="blog/">Guides</a>
+    <a href="contact/">Contact</a>
+  </nav>
+</header>
+
+<main class="surface">
+
+  <div class="intakebox" id="intake">
+    <div class="hero">
+      <h1>Open, edit and re-export a <em>database</em> — right in your browser.</h1>
+      <p class="lede">Open a SQLite file, a <b>.sql</b> dump or a <b>CSV</b>, edit the data in a grid or with SQL, then download a fresh file. Read once, never written to, never uploaded.</p>
+      <div class="actions">
+        <button class="draftbtn solid" id="pick">Open a database</button>
+        <button class="draftbtn" id="blank">Start blank</button>
+        <button class="draftbtn" id="csvwiz">Import CSV</button>
+        <button class="draftbtn ghost" id="trysample">Try a sample →</button>
+        <button class="draftbtn" id="resume" hidden>Resume last session</button>
+      </div>
+      <input type="file" id="filein" accept=".sqlite,.sqlite3,.db,.db3,.sql,.csv,.txt" hidden>
+      <p class="fineprint"><b>.sqlite / .db</b> · <b>.sql</b> dumps (MySQL, Postgres, SQLite) · <b>.csv</b> — or drop a file anywhere on the page. Exports are fresh files built by our own writer; for CSV, the <b>import wizard</b> types each column before the table is created.</p>
+
+      <div class="preview" aria-hidden="true">
+        <div class="pvbar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="tag">table <b>employees</b> · 5 rows</span>
+        </div>
+        <div class="pvscroll">
+          <table class="pv">
+            <thead>
+              <tr><th class="rn">#</th><th>id</th><th>name</th><th>role</th><th>city</th><th>salary</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="rn">1</td><td>1</td><td>Ada Lovelace</td><td>Engineer</td><td>London</td><td>95000</td></tr>
+              <tr><td class="rn">2</td><td>2</td><td>Grace Hopper</td><td>Architect</td><td class="sel">New York</td><td>102000</td></tr>
+              <tr><td class="rn">3</td><td>3</td><td>Alan Turing</td><td>Researcher</td><td>Manchester</td><td>99000</td></tr>
+              <tr><td class="rn">4</td><td>4</td><td>Katherine Johnson</td><td>Scientist</td><td>Hampton</td><td>97000</td></tr>
+              <tr><td class="rn">5</td><td>5</td><td>Edsger Dijkstra</td><td>Analyst</td><td class="muted">∅</td><td>88000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pvconsole">
+          <span class="prompt">SQL</span>
+          <span class="q">SELECT name, salary FROM employees WHERE salary &gt; <b>90000</b> ORDER BY salary DESC</span>
+          <span class="runchip">⌘⏎ run</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="board" hidden>
+    <div class="boardbar">
+      <span class="src">editing: <b id="sourcename"></b></span>
+      <button class="draftbtn small" id="undo" disabled>↶ undo</button>
+      <button class="draftbtn small" id="redo" disabled>↷ redo</button>
+      <button class="draftbtn small" id="addrow">+ row</button>
+      <button class="draftbtn small" id="renametable">rename table</button>
+      <button class="draftbtn small" id="droptable">drop table</button>
+      <button class="draftbtn small" id="closefile">close</button>
+    </div>
+    <div class="worktop">
+      <aside class="schema" id="schema"></aside>
+      <div class="worktable">
+        <div id="tabs"></div>
+        <div class="gridwrap">
+          <table class="grid">
+            <thead id="gridhead"></thead>
+            <tbody id="gridbody"></tbody>
+          </table>
+        </div>
+        <div class="gridfacts" id="gridfacts"></div>
+      </div>
+    </div>
+
+    <div class="console">
+      <div class="airow">
+        <input type="text" id="aiq" spellcheck="false" placeholder="Plain English → SQL — e.g. count by role · top 5 by salary · average salary by role · rows in London">
+        <button class="draftbtn small solid" id="aigen">✦ to SQL</button>
+      </div>
+      <div class="lbl">SQL console — select / update / delete / insert · ⌘⏎ runs</div>
+      <textarea id="sqlin" spellcheck="false" placeholder="SELECT * FROM table1 WHERE id > 5 ORDER BY id DESC LIMIT 10"></textarea>
+      <div style="margin-top:6px">
+        <button class="draftbtn small" id="runsql">run</button>
+        <button class="draftbtn small" id="savequery">save this query</button>
+      </div>
+      <div id="sqloutwrap" hidden>
+        <div class="sqloutbar"><span id="sqloutcap"></span><span class="sqloutbtns"><button class="draftbtn small" id="resultcsv">⬇ CSV</button><button class="draftbtn small" id="saveresult">+ save result as table</button></span></div>
+        <table id="sqlout"></table>
+      </div>
+      <div class="savedq" id="savedqwrap" hidden>
+        <div class="lbl">saved queries — kept on this device · one tap re-runs</div>
+        <div id="savedq"></div>
+      </div>
+    </div>
+
+    <div class="shelfbar">
+      <button class="draftbtn solid" id="exp-sqlite">⬇ .sqlite (certified)</button>
+      <select id="dialect">
+        <option value="sqlite">sqlite dialect</option>
+        <option value="mysql">mysql dialect</option>
+        <option value="postgres">postgres dialect</option>
+      </select>
+      <button class="draftbtn" id="exp-sql">⬇ .sql dump</button>
+      <button class="draftbtn" id="exp-csv">⬇ CSV (this table)</button>
+      <button class="draftbtn small" id="exp-extras">recreate script</button>
+    </div>
+    <p class="draftline" id="draftline"></p>
+  </div>
+
+</main>
+
+<div class="wizmodal" id="wizmodal" hidden>
+  <div class="wizcard">
+    <div class="wizhead">
+      <span>Import CSV — check each column's type, then create the table</span>
+      <button class="rowx" id="wizclose" title="close">×</button>
+    </div>
+    <div class="wizbody">
+      <div class="wizstep">
+        <button class="draftbtn small" id="wizpick">choose a .csv file…</button>
+        <span class="dim" style="font-size:0.76rem"> or paste rows below</span>
+        <input type="file" id="wizfile" accept=".csv,.txt" hidden>
+        <textarea id="wizpaste" spellcheck="false" placeholder="name,qty,price&#10;Widget,42,4.20&#10;Gadget,7,19.99"></textarea>
+        <button class="draftbtn small solid" id="wizparse">read columns</button>
+        <span class="dim" id="wizmsg" style="font-size:0.76rem"></span>
+      </div>
+      <div class="wizstep" id="wizmap" hidden>
+        <label class="wizname">table name <input type="text" id="wiztname" spellcheck="false"></label>
+        <div class="wizcols" id="wizcols"></div>
+        <div class="wizprev" id="wizprev"></div>
+        <button class="draftbtn solid" id="wizcreate">create table from CSV</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="drawings">
+
+  <h2 class="callout">What editsqlite does</h2>
+  <p class="callsub">a full editor, no server, no account</p>
+  <div class="featgrid">
+    <div class="feat">
+      <h3>Opens the files you have</h3>
+      <p>SQLite databases (.sqlite / .db), .sql dumps from MySQL, Postgres or SQLite, and plain CSV. Drop one anywhere, or start from a blank database.</p>
+    </div>
+    <div class="feat">
+      <h3>Edit like a spreadsheet</h3>
+      <p>Double-click a cell to change it, add or delete rows and columns, rename tables, undo and redo. A side panel shows every table's columns, types and row counts.</p>
+    </div>
+    <div class="feat">
+      <h3>Or edit with SQL</h3>
+      <p>A hand-written console runs SELECT, UPDATE, DELETE and INSERT with a real WHERE. It loads instantly, works offline, and every result is explainable.</p>
+    </div>
+    <div class="feat">
+      <h3>Export a fresh, valid file</h3>
+      <p>Download a clean .sqlite our writer builds byte by byte, a .sql dump in any of three dialects, or CSV. Each .sqlite passes the official engine's integrity check.</p>
+    </div>
+  </div>
+
+  <h2 class="callout">How it stays safe</h2>
+  <p class="callsub">rebuild, don't operate in place</p>
+  <p>Every editor of precious files picks one of two paths: change the bytes inside the file (fast, and one wrong offset corrupts it for good) or rebuild the whole file on save. editsqlite always rebuilds. Your original is read once and never written; edits live in a working copy in the tab; and each export runs our SQLite writer over the entire model — every page laid out fresh, every offset recomputed — then holds the result to an outside standard: <b>the official SQLite engine's own <code>PRAGMA integrity_check</code> passes on our output</b>, and the engine will happily insert its own rows into files we built. Corruption needs something to touch, and we touch nothing.</p>
+
+  <h2 class="callout">Under the hood</h2>
+  <p class="callsub">four small pieces, each written by hand</p>
+  <ol>
+    <li><b>The reader</b> — SQLite's b-trees, varints and overflow chains, parsed value for value and checked against the reference engine on awkward files.</li>
+    <li><b>The dump parser</b> — mysqldump, pg_dump and sqlite3 output, with each dialect's escapes and COPY blocks handled the way the real tools write them.</li>
+    <li><b>The console engine</b> — a compact SQL interpreter (four statements, an honest WHERE) built from scratch: instant load, predictable behavior, and the editor's default. Heavier read-only analysis (joins, grouping, subqueries) hands off to the real SQLite engine, summoned only when a query needs it.</li>
+    <li><b>The writer</b> — records encoded, pages packed, trees stacked, header stamped: the part that lets an export call itself certified.</li>
+  </ol>
+
+  <h2 class="callout">Where the limits are</h2>
+  <p class="callsub">said up front, not discovered later</p>
+  <ul>
+    <li><b>indexes, views, triggers</b> leave as a recreate script — data is what gets edited here, and a stale index is worse than a missing one</li>
+    <li><b>console SQL</b> edits with four hand-written verbs (instant, offline); joins, GROUP BY, aggregates and subqueries summon the real SQLite engine on first use — read-only, so analysis never rewrites your data</li>
+    <li><b>the schema panel</b> only offers edits the writer can regenerate cleanly — rename table, add / rename / drop column, live row counts — because this editor models values, not constraints; declared types show where the source DDL kept them, otherwise the affinity is read from the data, and foreign keys and CHECK constraints are set aside rather than half-edited</li>
+    <li><b>rows over ~4KB</b> and databases larger than browser memory are declined by name — overflow-page writing isn't built yet</li>
+    <li><b>blobs</b> pass through every export intact but aren't editable in the grid — hex editing is a different tool</li>
+  </ul>
+
+  <div class="notebox">
+    <p>editsqlite started with a stuck afternoon. A lab's specimen catalog — a SQLite file a postdoc had built years earlier — needed a few hundred rows corrected, and the only sanctioned way in was a web form wired to an old server, one row per page load. Every faster option wanted the whole catalog uploaded to someone else's cloud. What I wanted felt obvious and turned out to be rare: open the file, fix the cells like a spreadsheet, save a clean copy, without the data ever leaving the building. So this got built — a reader, a writer and a small honest SQL engine, all running right here. The corrections took an afternoon, the file never left the room, and the tool stuck around.</p>
+    <p class="sig">— the engineer behind editsqlite</p>
+  </div>
+
+  <h2 class="callout">Questions people ask</h2>
+  <p class="callsub">the ones that actually come in</p>
+  <div class="rfis">
+    <div class="q">
+      <h3>Can I trust it with the only copy of a database?</h3>
+      <p>The design protects you twice — the original is never written to, and every export is a new file — but the honest answer is still: keep a copy. Any tool that asks you to trust it instead of checking its work shouldn't hold your only copy, this one included.</p>
+    </div>
+    <div class="q">
+      <h3>Why did my exported .sqlite get smaller?</h3>
+      <p>A rebuild writes only live data — no freelist pages, no fragmentation, no leftover index trees — so a well-used database often exports smaller than it arrived. Same rows, tighter pages; the integrity check is the receipt.</p>
+    </div>
+    <div class="q">
+      <h3>UPDATE without WHERE just changed every row!</h3>
+      <p>As SQL has always done — and undo has your back, since the console checkpoints before every mutation. The lesson costs one click here; on a production server it traditionally costs a much longer story. Consider this the safe place to learn it.</p>
+    </div>
+    <div class="q">
+      <h3>Could it edit MySQL or Postgres servers directly?</h3>
+      <p>No — browsers can't speak those wire protocols, and honestly shouldn't. The workflow is: dump the table (one command), edit it here, export the dialect dump, load it back. Files are the interface, and your credentials stay yours.</p>
+    </div>
+  </div>
+
+  <h2 class="callout">Convert between formats</h2>
+  <p class="callsub">the same tool, pointed at a job — all on your device, nothing uploaded</p>
+  <div class="sheetlist">
+    <a href="convert/csv-to-sqlite/">
+      <b>CSV → SQLite</b>
+      <span>Turn a spreadsheet export into a typed .sqlite database — each column typed before the table is built.</span>
+    </a>
+    <a href="convert/mysql-to-sqlite/">
+      <b>MySQL → SQLite</b>
+      <span>Open a mysqldump .sql file and leave with a working .sqlite — no local MySQL needed.</span>
+    </a>
+    <a href="convert/postgres-to-sqlite/">
+      <b>Postgres → SQLite</b>
+      <span>Read a pg_dump file, COPY blocks and all, and export a clean SQLite database.</span>
+    </a>
+    <a href="convert/sqlite-to-csv/">
+      <b>SQLite → CSV</b>
+      <span>Open any .sqlite / .db and export a table — or a query result — as CSV.</span>
+    </a>
+    <a href="convert/sqlite-to-sql/">
+      <b>SQLite → SQL dump</b>
+      <span>Export a database as a .sql dump in SQLite, MySQL or Postgres dialect.</span>
+    </a>
+    <a href="convert/">
+      <b>All converters →</b>
+      <span>Every direction the reader, dump parser and certified writer handle.</span>
+    </a>
+  </div>
+
+  <h2 class="callout">Build notes</h2>
+  <p class="callsub">longer reads on how the editor works inside</p>
+  <div class="sheetlist">
+    <a href="blog/writing-a-database-by-hand/">
+      <b>Writing a database by hand</b>
+      <span>Records, pages, trees and one off-by-one that pointed a whole b-tree the wrong way — building the writer the official engine signs off on.</span>
+      <time datetime="2026-07-05">5 jul 2026</time>
+    </a>
+    <a href="blog/regeneration-not-surgery/">
+      <b>Rebuild, don't operate in place</b>
+      <span>Why safe editing means never touching the original file — an architecture argument with corrupted-file scars behind it.</span>
+      <time datetime="2026-07-05">5 jul 2026</time>
+    </a>
+    <a href="blog/four-verbs-are-enough/">
+      <b>Four statements are enough</b>
+      <span>SELECT, UPDATE, DELETE, INSERT — what a hand-written mini-SQL engine covers, refuses, and quietly teaches.</span>
+      <time datetime="2026-07-05">5 jul 2026</time>
+    </a>
+  </div>
+
+</div>
+
+<footer class="border">
+  <a href="./">Editor</a>
+  <a href="convert/">Convert</a>
+  <a href="blog/">Guides</a>
+  <a href="privacy/">Privacy</a>
+  <a href="contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script src="sqlite.js"></script>
+<script src="sqlwrite.js"></script>
+<script src="dumpparse.js"></script>
+<script src="sqlmini.js"></script>
+<script src="analysisdb.js"></script>
+<script src="smartquery.js"></script>
+<script src="csvwiz.js"></script>
+<script src="shelf.js"></script>
+<script src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

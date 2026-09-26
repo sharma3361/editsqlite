@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy — editsqlite</title>
+<meta name="description" content="Databases edited here live in your tab and your browser's local storage. The original file is never written; there is no upload path.">
+<link rel="canonical" href="https://editsqlite.com/privacy/">
+<meta name="theme-color" content="#f6f7f9">
+<meta name="robots" content="noindex, follow">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../styles.css">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="mark" href="../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../">Editor</a>
+    <a href="../blog/">Guides</a>
+    <a href="../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+  <h2 class="callout" style="margin-top:30px">Privacy</h2>
+  <p class="callsub">short, because there isn't much to say</p>
+  <p>An editable database is sensitive by nature: customer lists mid-correction, lab catalogs mid-cleanup, exports mid-migration. editsqlite is built so that data never has to leave your machine, and this page spells out exactly why.</p>
+  <p><b>Where your data goes, in full:</b> your file → tab memory (the working copy) → your screen → your downloads folder (exports) and your browser's own local storage (the autosaved session, size-capped, on your device). The site is nothing but static files; there is no upload endpoint in the code, so there is no server to make promises about. Airplane mode is the acceptance test — everything keeps working with the network off.</p>
+  <p><b>About the autosave:</b> sessions are kept in localStorage so a closed tab doesn't cost you an afternoon of corrections. That storage sits on your device, is readable only by this site, and is cleared by you — closing a file writes one final snapshot, and your browser's site-data controls erase it completely. Databases past a couple of megabytes skip autosave rather than strain it; that's stated here, not left for you to discover.</p>
+  <p><b>What we don't load:</b> no analytics package, no advertising scripts, no tracking cookies, no account system — none of it is in the build. The two typefaces arrive from Google Fonts on first visit and then cache. Cloudflare, which serves the static files, keeps a plain visitor count; the contents of anyone's working copy stay invisible to everyone but the person editing.</p>
+  <p class="dim">questions → <a href="../contact/">Contact</a> · reviewed 5 july 2026</p>
+</div>
+
+<footer class="border">
+  <a href="../">Editor</a>
+  <a href="../blog/">Guides</a>
+  <a href="../privacy/">Privacy</a>
+  <a href="../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

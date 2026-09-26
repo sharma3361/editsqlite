@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQLite to CSV Online — Export a .sqlite Table to CSV In Your Browser</title>
+<meta name="description" content="Open a .sqlite / .db file in your browser and export any table to CSV — quoted correctly, ready for a spreadsheet. Nothing uploads; the file is read in the tab and never written to.">
+<link rel="canonical" href="https://editsqlite.com/convert/sqlite-to-csv/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="SQLite to CSV Online — Export a .sqlite Table to CSV In Your Browser">
+<meta property="og:description" content="Open any SQLite database and export a table to CSV on your device. Nothing uploads; your original file is never modified.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/convert/sqlite-to-csv/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Export a SQLite table to CSV in the browser",
+  "description": "Open a .sqlite or .db file in editsqlite, pick a table, and export it to CSV — all on your own device.",
+  "totalTime": "PT1M",
+  "step": [
+    { "@type": "HowToStep", "name": "Open the database", "text": "Open editsqlite and choose Open a database, or drop the .sqlite / .db file onto the page." },
+    { "@type": "HowToStep", "name": "Pick the table", "text": "Select the table you want from the tabs or the schema panel." },
+    { "@type": "HowToStep", "name": "Export CSV", "text": "Click the CSV export for that table. A properly quoted .csv downloads; your original database is never touched." }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is my database uploaded?", "acceptedAnswer": { "@type": "Answer", "text": "No. The .sqlite file is read once in your browser tab and never written to; the CSV is generated locally and saved to your downloads. There is no server behind this site, so nothing is uploaded." } },
+    { "@type": "Question", "name": "Can I export just some rows or columns?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Run a query in the console — SELECT the columns and rows you want, including joins and grouping — and export that result directly to CSV, or export the whole table in one click." } },
+    { "@type": "Question", "name": "Are commas and quotes inside values handled?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Any field containing a comma, quote or line break is wrapped in quotes and inner quotes are doubled, so the CSV opens cleanly in Excel, Numbers or Google Sheets. NULL becomes an empty field." } }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../" class="here">Convert</a>
+    <a href="../../blog/">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <p class="meta"><a href="../">Converters</a> · SQLite → CSV</p>
+  <h1>Export a SQLite table to CSV — in your browser</h1>
+
+  <p>Sometimes the database isn't the destination — a spreadsheet is. You have a <b>.sqlite</b> or <b>.db</b> file and you need one table as a clean CSV to open in Excel, hand to a colleague, or feed into another tool. editsqlite opens the database in the tab, shows every table, and exports the one you want as correctly-quoted CSV. The database is read once and never modified, and nothing is uploaded.</p>
+
+  <h2>How to export SQLite to CSV</h2>
+  <ol>
+    <li><b>Open the database.</b> Click <b>Open a database</b> and choose your <b>.sqlite</b> / <b>.db</b> file, or drop it on the page.</li>
+    <li><b>Pick the table.</b> Switch to it using the tabs or the schema panel on the left.</li>
+    <li><b>Export CSV.</b> Click <b>⬇ CSV (this table)</b>. The <b>.csv</b> downloads, quoted so it opens cleanly anywhere.</li>
+  </ol>
+
+  <p><a class="draftbtn solid" href="../../?from=sqlite">Open a database now →</a></p>
+
+  <h2>Export a query, not just a whole table</h2>
+  <p>If you only want part of the data — certain columns, rows matching a condition, or the result of a join or a <code>GROUP BY</code> — run it in the SQL console first. Any result set has its own <b>⬇ CSV</b> button, so you can export exactly the shape you need instead of the entire table. It's the difference between "give me this database as a spreadsheet" and "give me this <em>answer</em> as a spreadsheet."</p>
+
+  <h2>Good to know</h2>
+  <ul>
+    <li>Fields with commas, quotes or newlines are quoted and escaped; <code>NULL</code> exports as an empty field.</li>
+    <li>Binary blob columns export as a <code>[BLOB]</code> placeholder — CSV is a text format and can't carry raw bytes.</li>
+    <li>Your original database file is never written to. Editing here always rebuilds a fresh file rather than touching the source.</li>
+    <li>Need to go the other way? See <a href="../csv-to-sqlite/">CSV → SQLite</a>.</li>
+  </ul>
+
+  <h2>Other conversions</h2>
+  <div class="sheetlist">
+    <a href="../csv-to-sqlite/"><b>CSV → SQLite</b><span>The round trip: turn a CSV into a typed database.</span></a>
+    <a href="../sqlite-to-sql/"><b>SQLite → SQL dump</b><span>Export the whole database as a .sql dump instead of a table CSV.</span></a>
+    <a href="../"><b>All converters</b><span>Every direction the tool handles.</span></a>
+  </div>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../">Convert</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Database Converters — CSV, MySQL, Postgres &amp; SQLite, In Your Browser</title>
+<meta name="description" content="Convert between CSV, MySQL dumps, Postgres dumps and SQLite entirely in your browser. Nothing uploads, no account, and every .sqlite export passes the official engine's integrity check.">
+<link rel="canonical" href="https://editsqlite.com/convert/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="Database Converters — CSV, MySQL, Postgres & SQLite, In Your Browser">
+<meta property="og:description" content="Convert between CSV, MySQL dumps, Postgres dumps and SQLite entirely on your device. Nothing uploads; every .sqlite export is certified by the official engine.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://editsqlite.com/convert/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../styles.css">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Database converters",
+  "url": "https://editsqlite.com/convert/",
+  "description": "In-browser converters between CSV, MySQL dumps, Postgres dumps and SQLite — nothing uploaded.",
+  "isPartOf": { "@type": "WebSite", "name": "editsqlite", "url": "https://editsqlite.com/" }
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../">Editor</a>
+    <a href="./" class="here">Convert</a>
+    <a href="../blog/">Guides</a>
+    <a href="../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+  <h1>Convert databases — right here in the tab</h1>
+  <p class="callsub">CSV, MySQL dumps, Postgres dumps and SQLite, all converted on your own device</p>
+
+  <p>Every converter below is the same tool: a hand-written SQLite reader, a three-dialect dump parser, a CSV intake bench and a SQLite <em>writer</em> the official engine signs off on. You open a file, editsqlite holds it in a working copy in the tab, and you download a fresh one. The file you gave it is read once and never written to. Nothing is uploaded — this is a static site with no server behind it, so there is nowhere for an upload to go. Turn off your network and the conversion still runs.</p>
+
+  <h2 class="callout">Pick a conversion</h2>
+  <p class="callsub">each page walks the exact steps, then hands you the tool</p>
+  <div class="sheetlist">
+    <a href="csv-to-sqlite/">
+      <b>CSV → SQLite</b>
+      <span>Turn a spreadsheet export into a real .sqlite database — the import wizard reads each column and types it before the table is created.</span>
+    </a>
+    <a href="mysql-to-sqlite/">
+      <b>MySQL → SQLite</b>
+      <span>Open a mysqldump .sql file and leave with a working .sqlite — escapes, multi-row inserts and backtick identifiers handled the way mysqldump writes them.</span>
+    </a>
+    <a href="postgres-to-sqlite/">
+      <b>Postgres → SQLite</b>
+      <span>Read a pg_dump file, COPY blocks and all, and export a clean SQLite database — no local Postgres install required.</span>
+    </a>
+    <a href="sqlite-to-csv/">
+      <b>SQLite → CSV</b>
+      <span>Open any .sqlite / .db file and export a table as CSV — quoted correctly, ready for a spreadsheet.</span>
+    </a>
+    <a href="sqlite-to-sql/">
+      <b>SQLite → SQL dump</b>
+      <span>Export a .sqlite as a .sql dump in SQLite, MySQL or Postgres dialect — move a database between engines using a file, not a wire protocol.</span>
+    </a>
+  </div>
+
+  <h2 class="callout">Why convert in the browser</h2>
+  <div class="featgrid">
+    <div class="feat"><h3>Nothing uploads</h3><p>Databases hold the most sensitive files people own. Here the file never leaves your device — the working copy lives in tab memory, exports land in your downloads folder.</p></div>
+    <div class="feat"><h3>No install, no account</h3><p>No local MySQL or Postgres to spin up, no sign-up, no command line. Open the page, drop a file, download the result.</p></div>
+    <div class="feat"><h3>Certified output</h3><p>Every .sqlite is built page by page by our own writer and passes the official engine's <code>PRAGMA integrity_check</code> — the bar we hold each export to.</p></div>
+    <div class="feat"><h3>Edit on the way through</h3><p>A conversion is also an editor: fix cells in a grid, run SQL, add or drop columns before you export. The convert and the clean-up are one step.</p></div>
+  </div>
+
+  <p style="margin-top:22px"><a class="draftbtn solid" href="../">Open the editor →</a></p>
+</div>
+
+<footer class="border">
+  <a href="../">Editor</a>
+  <a href="./">Convert</a>
+  <a href="../blog/">Guides</a>
+  <a href="../privacy/">Privacy</a>
+  <a href="../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

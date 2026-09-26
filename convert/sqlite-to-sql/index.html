@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQLite to SQL Dump Online — Export .sqlite as SQLite, MySQL or Postgres In Your Browser</title>
+<meta name="description" content="Open a .sqlite / .db file and export a .sql dump in SQLite, MySQL or Postgres dialect — in your browser, nothing uploaded. Move a database between engines using a file, not a wire protocol.">
+<link rel="canonical" href="https://editsqlite.com/convert/sqlite-to-sql/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="SQLite to SQL Dump Online — Export .sqlite as SQLite, MySQL or Postgres In Your Browser">
+<meta property="og:description" content="Export a SQLite database as a .sql dump in three dialects, on your device. Nothing uploads; move data between engines with a file.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/convert/sqlite-to-sql/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Export a SQLite database as a SQL dump in the browser",
+  "description": "Open a .sqlite file in editsqlite, choose a dialect, and export a .sql dump in SQLite, MySQL or Postgres flavour.",
+  "totalTime": "PT1M",
+  "step": [
+    { "@type": "HowToStep", "name": "Open the database", "text": "Open editsqlite and choose Open a database, or drop the .sqlite / .db file onto the page." },
+    { "@type": "HowToStep", "name": "Choose the dialect", "text": "In the export bar, pick sqlite, mysql or postgres dialect." },
+    { "@type": "HowToStep", "name": "Export the .sql dump", "text": "Click the .sql dump export. A dump written for the chosen engine downloads." }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Which dialects can I export?", "acceptedAnswer": { "@type": "Answer", "text": "Three: SQLite, MySQL and Postgres. The dump's identifier quoting and string and blob escapes are written for the engine you pick, so it loads into that engine's client." } },
+    { "@type": "Question", "name": "Can editsqlite connect to MySQL or Postgres directly?", "acceptedAnswer": { "@type": "Answer", "text": "No — browsers can't speak those wire protocols, and shouldn't hold your server credentials. Files are the interface: export the dialect dump here, then load it with your engine's normal import command." } },
+    { "@type": "Question", "name": "Is my database uploaded?", "acceptedAnswer": { "@type": "Answer", "text": "No. The .sqlite is read in the browser tab and the dump is generated there; nothing is uploaded and it works offline once loaded." } }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../" class="here">Convert</a>
+    <a href="../../blog/">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <p class="meta"><a href="../">Converters</a> · SQLite → SQL dump</p>
+  <h1>Export a SQLite database as a SQL dump — three dialects, in your browser</h1>
+
+  <p>A <b>.sqlite</b> file is perfect until you need the data <em>somewhere else</em> — in MySQL, in Postgres, or as a plain <code>.sql</code> you can read and diff. editsqlite exports a dump in whichever of the three dialects you choose, with the right quoting and escapes for that engine, all in a browser tab. Files are the interface here: no server credentials, nothing uploaded.</p>
+
+  <h2>How to export a SQLite database as a SQL dump</h2>
+  <ol>
+    <li><b>Open the database.</b> Click <b>Open a database</b> and choose your <b>.sqlite</b> / <b>.db</b> file, or drop it on the page.</li>
+    <li><b>Choose the dialect.</b> In the export bar, pick <b>sqlite</b>, <b>mysql</b> or <b>postgres</b>.</li>
+    <li><b>Export the dump.</b> Click <b>⬇ .sql dump</b>. A dump written for that engine downloads — <code>CREATE TABLE</code> plus <code>INSERT</code> statements with the correct quoting.</li>
+  </ol>
+
+  <p><a class="draftbtn solid" href="../../?from=sqlite">Open a database now →</a></p>
+
+  <h2>Why a dump instead of a direct connection</h2>
+  <p>It's tempting to want a tool that just logs into your MySQL or Postgres and pushes the data across. A browser can't do that — it can't speak those wire protocols, and it has no business holding your database password. The honest workflow is older and safer: export a dialect dump here, then load it with the engine's own import (<code>mysql &lt; dump.sql</code>, <code>psql -f dump.sql</code>). Your credentials never touch this page, and the file is something you can inspect before you run it.</p>
+
+  <h2>Good to know</h2>
+  <ul>
+    <li>String and blob escapes are written for the chosen engine — MySQL backslashes, Postgres <code>\x</code> hex, SQLite <code>X'...'</code>.</li>
+    <li>Edit before you export: fix rows in the grid or run SQL, and the dump reflects your changes.</li>
+    <li>Indexes and views are offered as a separate recreate script rather than being force-fit into every dialect.</li>
+    <li>Prefer a fresh binary database instead of a text dump? Use the certified <a href="../mysql-to-sqlite/">.sqlite export</a> on the editor.</li>
+  </ul>
+
+  <h2>Other conversions</h2>
+  <div class="sheetlist">
+    <a href="../mysql-to-sqlite/"><b>MySQL → SQLite</b><span>Come in from a mysqldump file.</span></a>
+    <a href="../sqlite-to-csv/"><b>SQLite → CSV</b><span>Export a single table as a spreadsheet instead of a dump.</span></a>
+    <a href="../"><b>All converters</b><span>Every direction the tool handles.</span></a>
+  </div>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../">Convert</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

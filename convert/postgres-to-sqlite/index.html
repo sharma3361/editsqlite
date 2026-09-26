@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postgres to SQLite Online — Convert a pg_dump .sql to .sqlite In Your Browser</title>
+<meta name="description" content="Convert a PostgreSQL dump to a SQLite database in your browser. editsqlite reads pg_dump output including COPY blocks and Postgres escapes, then exports a certified .sqlite. Nothing uploads, no local Postgres needed.">
+<link rel="canonical" href="https://editsqlite.com/convert/postgres-to-sqlite/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="Postgres to SQLite Online — Convert a pg_dump .sql to .sqlite In Your Browser">
+<meta property="og:description" content="Open a pg_dump file, COPY blocks and all, and export a clean SQLite database — on your device, nothing uploaded, no local Postgres required.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/convert/postgres-to-sqlite/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Convert a Postgres dump to SQLite in the browser",
+  "description": "Open a pg_dump .sql file in editsqlite, review the tables, and export a fresh .sqlite database on your own device.",
+  "totalTime": "PT2M",
+  "step": [
+    { "@type": "HowToStep", "name": "Dump the Postgres database", "text": "Run pg_dump in plain format, e.g. pg_dump --inserts mydb > mydb.sql (COPY-format dumps also work)." },
+    { "@type": "HowToStep", "name": "Open the dump", "text": "Open editsqlite and choose Open a database, or drop the .sql onto the page." },
+    { "@type": "HowToStep", "name": "Review or edit", "text": "Tables appear in the grid with their rows; edit cells or run SQL as needed." },
+    { "@type": "HowToStep", "name": "Export the .sqlite", "text": "Click the certified .sqlite export to download a fresh SQLite file." }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Do COPY blocks work, or only INSERTs?", "acceptedAnswer": { "@type": "Answer", "text": "Both. editsqlite reads Postgres COPY ... FROM stdin blocks as well as INSERT statements, handling tab-separated values, \\N for NULL and the standard backslash escapes. A plain pg_dump either way converts cleanly." } },
+    { "@type": "Question", "name": "Do I need PostgreSQL installed?", "acceptedAnswer": { "@type": "Answer", "text": "No. You only need the .sql dump file. The conversion runs entirely in your browser with no database server, local or remote." } },
+    { "@type": "Question", "name": "Is my dump uploaded?", "acceptedAnswer": { "@type": "Answer", "text": "No. It is read in the browser tab and the .sqlite is written there. There is no server behind this site, so nothing is uploaded and it works offline." } },
+    { "@type": "Question", "name": "What about Postgres-only types and extensions?", "acceptedAnswer": { "@type": "Answer", "text": "Data and table structure convert. Postgres-specific features — stored procedures, custom types, extensions — are named and set aside rather than mistranslated, so you know exactly what the SQLite copy holds." } }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../" class="here">Convert</a>
+    <a href="../../blog/">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <p class="meta"><a href="../">Converters</a> · Postgres → SQLite</p>
+  <h1>Convert a Postgres dump to SQLite — in your browser</h1>
+
+  <p>A <code>pg_dump</code> file is the portable form of a PostgreSQL database, but it only speaks Postgres. To get a <b>.sqlite</b> out of it the usual way, you'd restore the dump into a running Postgres and then convert. editsqlite reads the dump straight — <code>COPY</code> blocks and all — and hands you a SQLite file, without a database server anywhere in sight and without the data leaving your machine.</p>
+
+  <h2>How to convert Postgres to SQLite</h2>
+  <ol>
+    <li><b>Produce the dump.</b> A plain-format dump works either way: <code>pg_dump --inserts mydb &gt; mydb.sql</code>, or a default COPY-format dump.</li>
+    <li><b>Open it here.</b> Click <b>Open a database</b> and choose the <b>.sql</b> file, or drop it on the page. The parser handles <code>COPY ... FROM stdin</code> data, <code>\N</code> nulls and Postgres escapes.</li>
+    <li><b>Review the tables.</b> Each table opens in the grid; edit cells or run a <code>SELECT</code> to check the import.</li>
+    <li><b>Export the <b>.sqlite</b>.</b> Click <b>⬇ .sqlite (certified)</b> to download the fresh database.</li>
+  </ol>
+
+  <p><a class="draftbtn solid" href="../../?from=postgres">Convert a Postgres dump now →</a></p>
+
+  <h2>COPY blocks, handled the way pg_dump writes them</h2>
+  <p>Most browser converters choke on a default <code>pg_dump</code> because the rows aren't <code>INSERT</code> statements at all — they're a <code>COPY</code> block of tab-separated lines terminated by a lone <code>\.</code>. editsqlite reads that block directly: tabs split the fields, <code>\N</code> becomes <code>NULL</code>, and <code>\t</code>, <code>\n</code>, <code>\r</code> and <code>\\</code> are un-escaped the way Postgres wrote them. So you don't have to re-dump with <code>--inserts</code> just to get it to read.</p>
+
+  <h2>Good to know</h2>
+  <ul>
+    <li>No Postgres install required — only the dump file. Nothing uploads; it works offline once loaded.</li>
+    <li>Large dumps are bounded by browser memory, since the whole database lives in the tab.</li>
+    <li>Postgres-only features are named and set aside, not mistranslated — the copy is honest about its contents.</li>
+    <li>Want to go back out to a Postgres-flavoured dump after editing? See <a href="../sqlite-to-sql/">SQLite → SQL dump</a>.</li>
+  </ul>
+
+  <h2>Other conversions</h2>
+  <div class="sheetlist">
+    <a href="../mysql-to-sqlite/"><b>MySQL → SQLite</b><span>The same trip from a mysqldump file.</span></a>
+    <a href="../csv-to-sqlite/"><b>CSV → SQLite</b><span>Start from a spreadsheet export instead of a dump.</span></a>
+    <a href="../"><b>All converters</b><span>Every direction the tool handles.</span></a>
+  </div>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../">Convert</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

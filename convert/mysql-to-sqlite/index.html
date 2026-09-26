@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MySQL to SQLite Online — Convert a mysqldump .sql to .sqlite In Your Browser</title>
+<meta name="description" content="Convert a MySQL dump to a SQLite database in your browser. editsqlite reads mysqldump output — multi-row inserts, backtick identifiers, backslash escapes — and exports a certified .sqlite. Nothing uploads, no local MySQL needed.">
+<link rel="canonical" href="https://editsqlite.com/convert/mysql-to-sqlite/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="MySQL to SQLite Online — Convert a mysqldump .sql to .sqlite In Your Browser">
+<meta property="og:description" content="Open a mysqldump .sql file and leave with a working .sqlite — on your device, nothing uploaded, no local MySQL required.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/convert/mysql-to-sqlite/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Convert a MySQL dump to SQLite in the browser",
+  "description": "Open a mysqldump .sql file in editsqlite, review the tables, and export a fresh .sqlite database on your own device.",
+  "totalTime": "PT2M",
+  "step": [
+    { "@type": "HowToStep", "name": "Dump the MySQL database", "text": "Run mysqldump to produce a .sql file, e.g. mysqldump mydb > mydb.sql." },
+    { "@type": "HowToStep", "name": "Open the dump", "text": "Open editsqlite and choose Open a database, or drop the .sql file onto the page. The dump parser reads the CREATE TABLE and INSERT statements." },
+    { "@type": "HowToStep", "name": "Review or edit", "text": "Every table appears in the grid with its rows. Fix cells or run SQL if you like." },
+    { "@type": "HowToStep", "name": "Export the .sqlite", "text": "Click the certified .sqlite export. A fresh SQLite file is built in the tab and downloaded." }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Do I need a local MySQL install?", "acceptedAnswer": { "@type": "Answer", "text": "No. You only need the .sql dump file. editsqlite parses mysqldump output directly in the browser — there is no database server to run, local or remote." } },
+    { "@type": "Question", "name": "Is the dump uploaded anywhere?", "acceptedAnswer": { "@type": "Answer", "text": "No. The file is read in your browser tab and the .sqlite is written there too. This is a static site with no server, so there is nowhere to upload to; it works offline." } },
+    { "@type": "Question", "name": "What parts of the dump are converted?", "acceptedAnswer": { "@type": "Answer", "text": "Table structure and data: CREATE TABLE, single and multi-row INSERT statements, backtick identifiers, doubled and backslash string escapes, and hex blob literals. Engine-specific extras like stored procedures, triggers and MySQL-only types are named and set aside rather than mistranslated." } },
+    { "@type": "Question", "name": "Is the result a valid SQLite file?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is written by our own SQLite writer and passes the official engine's PRAGMA integrity_check, so any SQLite tool can open it." } }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../" class="here">Convert</a>
+    <a href="../../blog/">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <p class="meta"><a href="../">Converters</a> · MySQL → SQLite</p>
+  <h1>Convert a MySQL dump to SQLite — in your browser</h1>
+
+  <p>You have a <code>mysqldump</code> file and you want a single, portable <b>.sqlite</b> — for a local app, a test fixture, a phone, or just to poke at the data without standing up a MySQL server. The usual route is installing MySQL, importing the dump, then running a second tool to convert. Here you skip all of it: open the <b>.sql</b> file in a browser tab and download a working SQLite database. The dump never leaves your device.</p>
+
+  <h2>How to convert MySQL to SQLite</h2>
+  <ol>
+    <li><b>Produce the dump.</b> If you don't have one yet: <code>mysqldump mydb &gt; mydb.sql</code>. A dump of a single table works too.</li>
+    <li><b>Open it here.</b> Click <b>Open a database</b> and pick the <b>.sql</b> file, or drop it onto the page. The parser reads the <code>CREATE TABLE</code> and <code>INSERT</code> statements the way mysqldump actually writes them.</li>
+    <li><b>Review the tables.</b> Each table opens in the grid with its rows and columns. Edit anything, or run a <code>SELECT</code> to spot-check.</li>
+    <li><b>Export the <b>.sqlite</b>.</b> Click <b>⬇ .sqlite (certified)</b> and the fresh database downloads.</li>
+  </ol>
+
+  <p><a class="draftbtn solid" href="../../?from=mysql">Convert a MySQL dump now →</a></p>
+
+  <h2>What carries across — and what's set aside</h2>
+  <p>Structure and data make the trip: table definitions, single and multi-row inserts, backtick-quoted names, MySQL's backslash and doubled-quote escapes, and <code>X'...'</code> hex blobs. What doesn't cross is named honestly rather than half-translated — stored procedures, triggers, and engine-specific types are listed as "set aside" so you always know what the SQLite copy does and doesn't contain. A conversion you can trust is one that tells you where it stopped.</p>
+
+  <h2>Good to know</h2>
+  <ul>
+    <li>No MySQL server is involved — only the dump file. Nothing is uploaded, and it works offline once loaded.</li>
+    <li>Very large dumps are bounded by your browser's memory, since the whole database is held in the tab.</li>
+    <li>Indexes and views ride along as a one-click recreate script rather than being rebuilt into the file — safer than a half-right index.</li>
+    <li>Need the other direction, or a Postgres-flavoured dump out? Use <a href="../sqlite-to-sql/">SQLite → SQL dump</a> after editing.</li>
+  </ul>
+
+  <h2>Other conversions</h2>
+  <div class="sheetlist">
+    <a href="../postgres-to-sqlite/"><b>Postgres → SQLite</b><span>The same trip from a pg_dump file, COPY blocks and all.</span></a>
+    <a href="../sqlite-to-sql/"><b>SQLite → SQL dump</b><span>Export back out in SQLite, MySQL or Postgres dialect.</span></a>
+    <a href="../"><b>All converters</b><span>Every direction the tool handles.</span></a>
+  </div>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../">Convert</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

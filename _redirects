@@ -1,0 +1,11 @@
+# Cloudflare Pages redirects — <source> <destination> <status>
+# sheets not in the set land on /404.html by themselves.
+
+/editor      /          301
+/edit        /          301
+/sqlite      /          301
+/convert     /          301
+/sheets      /blog/     301
+
+# the build spec ships in the folder but must never be served
+/CLAUDE.md    /    301
