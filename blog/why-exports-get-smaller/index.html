@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why the Exported Database Comes Out Smaller — editsqlite</title>
+<meta name="description" content="A 1.8 MB SQLite file went in and a 274 KB file came out with every row intact. Where the missing space went, page by page, and three commands to check it on your own file.">
+<link rel="canonical" href="https://editsqlite.com/blog/why-exports-get-smaller/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="Why the Exported Database Comes Out Smaller — editsqlite">
+<meta property="og:description" content="A 1.8 MB SQLite file went in and a 274 KB file came out with every row intact. Where the missing space went, page by page, and three commands to check it on your own file.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/blog/why-exports-get-smaller/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Why the exported database comes out smaller",
+  "description": "A 1.8 MB SQLite file went in and a 274 KB file came out with every row intact. Where the missing space went, page by page, and three commands to check it on your own file.",
+  "datePublished": "2026-09-29",
+  "dateModified": "2026-09-29",
+  "author": { "@type": "Person", "name": "Saurav Kumar Sharma", "url": "https://editmp3tags.com/about/" },
+  "publisher": { "@type": "Organization", "name": "editsqlite", "url": "https://editsqlite.com/" },
+  "mainEntityOfPage": "https://editsqlite.com/blog/why-exports-get-smaller/",
+  "image": "https://editsqlite.com/og.png"
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../../blog/" class="here">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <h1>Why the exported database comes out smaller</h1>
+  <p class="meta">guide · 29 sep 2026 · by Saurav Kumar Sharma</p>
+
+  <p>This is the question that comes in most often: I opened a database, changed very little, exported it, and the new file is a fraction of the size. Did rows go missing? No. But a tool that says "trust me" about your data has not earned it, so here is one file worked through with real numbers, and the three commands that let you check your own.</p>
+
+  <h2>The test file</h2>
+  <p>It was built with the official <code>sqlite3</code> command-line tool, not with this site: a table of 20,000 orders, one index on the customer column, and then four rows in every five deleted. That is roughly what an app database looks like after a year of clearing out old records.</p>
+  <p><code>CREATE TABLE orders (id INTEGER PRIMARY KEY, customer TEXT, item TEXT, qty INTEGER, note TEXT);</code><br>
+  <code>CREATE INDEX idx_orders_customer ON orders(customer);</code><br>
+  <code>INSERT INTO orders ... 20,000 rows: 997 customers, 53 items, qty 1 to 7, a short random note</code><br>
+  <code>DELETE FROM orders WHERE id % 5 &lt;&gt; 0;</code></p>
+  <p>After the delete, 4,000 rows remained and the file was still 1,773,568 bytes: 433 pages of 4,096 bytes each. It did not shrink when the rows went. SQLite never hands space back by itself; pages that fall empty go onto a list for later reuse, called the freelist, and the file keeps its size.</p>
+  <p>That file then went through editsqlite's reader and writer. These are the same <code>sqlite.js</code> and <code>sqlwrite.js</code> the editor page loads, run under Node instead of a browser tab so the numbers could be captured. The export came out at 274,432 bytes, which is 67 pages. The rebuild took 19 milliseconds.</p>
+
+  <figure>
+    <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Page counts drawn to scale: the original file has 433 pages, of which 306 are free, 82 hold the table, 44 hold the index and 1 holds the schema. The editsqlite export has 67 pages: 66 table and 1 schema. sqlite3 VACUUM gives 88 pages: 66 table, 21 index, 1 schema.">
+      <rect width="640" height="250" fill="#ffffff"/>
+      <g font-family="monospace" font-size="11">
+        <text x="10" y="54" fill="#1a1d24">original</text>
+        <text x="10" y="67" fill="#6b7280" font-size="10">433 pages</text>
+        <rect x="110" y="44" width="1" height="26" fill="#1a1d24"/>
+        <rect x="111" y="44" width="82" height="26" fill="#4f46e5"/>
+        <rect x="193" y="44" width="44" height="26" fill="#d97706"/>
+        <rect x="237" y="44" width="306" height="26" fill="none" stroke="#9ca3af" stroke-dasharray="4 3"/>
+        <text x="148" y="38" fill="#4f46e5" text-anchor="middle">table 82</text>
+        <text x="218" y="38" fill="#d97706" text-anchor="middle">index 44</text>
+        <text x="390" y="61" fill="#6b7280" text-anchor="middle">free 306</text>
+
+        <text x="10" y="124" fill="#1a1d24">export</text>
+        <text x="10" y="137" fill="#6b7280" font-size="10">67 pages</text>
+        <rect x="110" y="114" width="1" height="26" fill="#1a1d24"/>
+        <rect x="111" y="114" width="66" height="26" fill="#4f46e5"/>
+        <text x="144" y="108" fill="#4f46e5" text-anchor="middle">table 66</text>
+
+        <text x="10" y="194" fill="#1a1d24">VACUUM</text>
+        <text x="10" y="207" fill="#6b7280" font-size="10">88 pages</text>
+        <rect x="110" y="184" width="1" height="26" fill="#1a1d24"/>
+        <rect x="111" y="184" width="66" height="26" fill="#4f46e5"/>
+        <rect x="177" y="184" width="21" height="26" fill="#d97706"/>
+        <text x="144" y="178" fill="#4f46e5" text-anchor="middle">table 66</text>
+        <text x="206" y="202" fill="#d97706">index 21</text>
+      </g>
+      <text x="320" y="240" font-family="monospace" font-size="11" fill="#6b7280" text-anchor="middle">drawn to scale, one pixel per page. the schema page is the thin black line.</text>
+    </svg>
+    <figcaption>the same 4,000 rows, three ways of storing them.</figcaption>
+  </figure>
+
+  <h2>Where the 366 pages went</h2>
+  <p><b>Free pages: 306 of them.</b> <code>PRAGMA freelist_count</code> on the original reported 306. That is 1.25 MB of pages holding nothing at all. The writer lays out only pages that carry live data, so these simply do not exist in the new file. This is most of the difference, and it is the same thing SQLite's own <code>VACUUM</code> command removes.</p>
+  <p><b>Half-empty table pages: 16 of them.</b> Before the export, the orders table sat on 82 pages. Deleting four rows in five left many of those pages partly empty; SQLite tidies some of that up as it goes, but not all. The writer packs rows into fresh pages from the start, so the same 4,000 rows fit in 66.</p>
+  <p><b>The index: 44 pages.</b> This is the part worth knowing about. The export writes tables. Indexes, views and triggers are not rebuilt into the file; after the export the editor says so ("1 indexes/views not included") and offers their <code>CREATE</code> statements as a script to download. An index holds no data of its own. It is a lookup structure SQLite builds from the table, so nothing is lost, but queries that filter on the customer column will scan the whole table until you run that script.</p>
+  <p>The sums close exactly. Original: 1 schema + 82 table + 44 index + 306 free = 433. Export: 1 schema + 66 table = 67.</p>
+
+  <h2>Checking it yourself</h2>
+  <p>Three commands in <code>sqlite3</code>, run against the exported file and then the original:</p>
+  <p><code>PRAGMA integrity_check;</code> on the export returned <code>ok</code>. That is the official engine walking every page and b-tree and finding nothing wrong.</p>
+  <p><code>SELECT count(*), min(id), max(id), sum(qty) FROM orders;</code> returned <code>4000|5|20000|16000</code> on both files. Pick columns from your own table that would change if a row were dropped or altered; a sum over a numeric column is a cheap fingerprint.</p>
+  <p><code>CREATE INDEX idx_orders_customer ON orders(customer);</code> run on the export brought it to 88 pages, 360,448 bytes. Running <code>VACUUM</code> on a copy of the original gave 88 pages too, with the index on 21 of them. Two different routes arriving at the same size is a good sign that neither is hiding anything.</p>
+
+  <h2>When the size change means something else</h2>
+  <p>The writer always uses 4,096-byte pages. A database created with 1,024-byte or 65,536-byte pages can change size for that reason alone, in either direction; <code>PRAGMA page_size;</code> tells you which you have. A file that barely shrinks has usually been vacuumed recently or has never had many deletes, and that is fine too. And if the row counts or sums ever disagree between the two files, keep the original, and write to the address on the <a href="../../contact/">contact page</a> with the numbers from both. An export that loses a row is the most serious defect this tool can have.</p>
+  <p>The short version: a database file is sized by its history, and an export is sized by what is in it now. Keep the original either way, as the <a href="../../">editor page</a> says; the checks above take a minute and turn "it looks right" into "it is right".</p>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>

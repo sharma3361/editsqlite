@@ -303,7 +303,7 @@ html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-
     </div>
     <div class="q">
       <h3>Why did my exported .sqlite get smaller?</h3>
-      <p>A rebuild writes only live data — no freelist pages, no fragmentation, no leftover index trees — so a well-used database often exports smaller than it arrived. Same rows, tighter pages; the integrity check is the receipt.</p>
+      <p>A rebuild writes only live data — no freelist pages, no fragmentation, no leftover index trees — so a well-used database often exports smaller than it arrived. Same rows, tighter pages; the integrity check is the receipt. <a href="blog/why-exports-get-smaller/">One file worked through, page by page</a>.</p>
     </div>
     <div class="q">
       <h3>UPDATE without WHERE just changed every row!</h3>
@@ -347,6 +347,11 @@ html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-
   <h2 class="callout">Build notes</h2>
   <p class="callsub">longer reads on how the editor works inside</p>
   <div class="sheetlist">
+    <a href="blog/why-exports-get-smaller/">
+      <b>Why the exported database comes out smaller</b>
+      <span>1.8 MB in, 274 KB out, every row intact: where the space went, page by page, and three commands to check your own file.</span>
+      <time datetime="2026-09-29">29 sep 2026</time>
+    </a>
     <a href="blog/writing-a-database-by-hand/">
       <b>Writing a database by hand</b>
       <span>Records, pages, trees and one off-by-one that pointed a whole b-tree the wrong way — building the writer the official engine signs off on.</span>

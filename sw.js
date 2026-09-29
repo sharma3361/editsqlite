@@ -31,7 +31,8 @@ var PRECACHE = [
   "./blog/",
   "./blog/writing-a-database-by-hand/",
   "./blog/regeneration-not-surgery/",
-  "./blog/four-verbs-are-enough/"
+  "./blog/four-verbs-are-enough/",
+  "./blog/why-exports-get-smaller/"
 ];
 
 self.addEventListener("install", function (e) {
