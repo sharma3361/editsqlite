@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>if(location.hostname.endsWith(".pages.dev"))location.replace(location.href.replace(location.hostname,"editsqlite.com"));</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UPDATE Without WHERE Changed Every Row — editsqlite</title>
+<meta name="description" content="One missing clause turned 223 active members into 250 lapsed ones. Why SQL does that, the two ways back in this editor, and the one-line habit that stops it happening.">
+<link rel="canonical" href="https://editsqlite.com/blog/update-without-where/">
+<meta name="theme-color" content="#f6f7f9">
+<meta property="og:title" content="UPDATE Without WHERE Changed Every Row — editsqlite">
+<meta property="og:description" content="One missing clause turned 223 active members into 250 lapsed ones. Why SQL does that, the two ways back in this editor, and the one-line habit that stops it happening.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://editsqlite.com/blog/update-without-where/">
+<meta property="og:image" content="https://editsqlite.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://editsqlite.com/og.png">
+<style>html{background:#f6f7f9;color:#1a1d24;font-family:-apple-system,"Segoe UI",sans-serif}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../styles.css">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" href="../../icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "UPDATE without WHERE changed every row",
+  "description": "One missing clause turned 223 active members into 250 lapsed ones. Why SQL does that, the two ways back in this editor, and the one-line habit that stops it happening.",
+  "datePublished": "2026-10-19",
+  "dateModified": "2026-10-19",
+  "author": { "@type": "Person", "name": "Saurav Kumar Sharma", "url": "https://editmp3tags.com/about/" },
+  "publisher": { "@type": "Organization", "name": "editsqlite", "url": "https://editsqlite.com/" },
+  "mainEntityOfPage": "https://editsqlite.com/blog/update-without-where/",
+  "image": "https://editsqlite.com/og.png"
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="mark" href="../../">edit<em>sqlite</em></a>
+  <span class="badge">runs in your tab · nothing uploads</span>
+  <nav>
+    <a href="../../">Editor</a>
+    <a href="../../blog/" class="here">Guides</a>
+    <a href="../../contact/">Contact</a>
+  </nav>
+</header>
+
+<div class="drawings">
+<article class="sheet">
+  <h1>UPDATE without WHERE changed every row</h1>
+  <p class="meta">guide · 19 oct 2026 · by Saurav Kumar Sharma</p>
+
+  <p>It is one of the questions on the editor page, and it usually arrives in capitals. You meant to change one row, you typed the statement into the console, and the message underneath said every row had changed. Nothing is broken. The console did exactly what the statement asked. Here is one slip worked through with real numbers, the two ways back, and the habit that makes it rare.</p>
+
+  <h2>The test table</h2>
+  <p>A small membership list: 250 rows, with an id, a name, a city and a status. It was written to a <code>.sqlite</code> file by <code>sqlwrite.js</code>, the same writer the editor uses for exports, then read back with <code>sqlite.js</code> and edited with <code>sqlmini.js</code>, the console's own engine. All three ran under Node so every count below could be captured. At the start, 223 members were <code>active</code> and 27 were <code>lapsed</code>.</p>
+  <p>The job: mark member 118, Kiran U. from Bristol, as lapsed.</p>
+
+  <h2>The slip</h2>
+  <p>This is what went into the console:</p>
+  <p><code>UPDATE members SET status = 'lapsed'</code></p>
+  <p>The reply was <code>UPDATE: 250 rows in members — undo has your back</code>. A count of the status column afterwards: 250 lapsed, 0 active. The 223 active members were gone in one keystroke.</p>
+  <p>The reason is simple once seen. In SQL, <code>WHERE</code> is a filter. An <code>UPDATE</code> visits every row of the table and changes the ones the filter lets through. Leave the filter out and nothing is filtered, so every row goes through. The official <code>sqlite3</code> tool, MySQL and Postgres all behave the same way; it is the language, not a quirk of this editor. In the console's engine it is a single line: when there is no <code>WHERE</code>, the test applied to each row simply returns true. <code>DELETE FROM members</code> with no <code>WHERE</code> works the same way and empties the table.</p>
+
+  <h2>Way back one: undo</h2>
+  <p>Before every <code>UPDATE</code>, <code>DELETE</code> or <code>INSERT</code>, the console takes a snapshot of the table, so one press of undo puts all 250 rows back as they were. It keeps the last 40 snapshots, and redo works too. Two limits are worth knowing before you need them.</p>
+  <p><b>The snapshot is of the table you have open.</b> The console can change any table by name, but the checkpoint records the one showing in the editor. If the grid is showing <code>orders</code> and you run <code>UPDATE members ...</code>, undo restores <code>orders</code>, which did not change, and <code>members</code> stays as the statement left it. Open the table you are about to change before you run the statement against it.</p>
+  <p><b>Dropping a table clears undo.</b> Snapshots that span a table which no longer exists would restore the wrong thing, so the history is reset.</p>
+
+  <h2>Way back two: the original file</h2>
+  <p>The editor never writes to the file you opened. Every edit happens on a working copy in the tab, and an export is always a new file. So when undo cannot help, open the original again. In the test, re-reading the untouched file gave 223 active and 27 lapsed, exactly the starting state. You lose any edits made since you opened it, which is a good reason to export after each piece of work you would not want to redo.</p>
+
+  <h2>The habit: SELECT first</h2>
+  <p>Write the <code>WHERE</code> as a <code>SELECT</code> before you write it as an <code>UPDATE</code>:</p>
+  <p><code>SELECT id, name, status FROM members WHERE id = 118</code></p>
+  <p>That returned one row: <code>118 | Kiran U. | active</code>. One row is what the job needs, so the same filter goes on the end of the change:</p>
+  <p><code>UPDATE members SET status = 'lapsed' WHERE id = 118</code></p>
+  <p>The reply was <code>UPDATE: 1 row in members — undo has your back</code>, and the counts became 222 active and 28 lapsed. The edited table was exported with the writer and handed to the official engine: <code>PRAGMA integrity_check;</code> returned <code>ok</code>, and grouping by status returned the same 222 and 28.</p>
+  <p>The preview matters most when the filter is not an id. <code>WHERE city = 'Leeds' AND status = 'active'</code> sounds like a handful of people; on this table it matched 45. Better to learn that from a <code>SELECT</code> than from the reply to an <code>UPDATE</code>.</p>
+
+  <h2>Read the count in the reply</h2>
+  <p>The row count after every change is the second check. If you expected 1 and it says 250, press undo straight away, before anything else touches the table.</p>
+  <p>One thing the count does not tell you: whether a value actually changed. While preparing this test, member 117 was tried first. The console replied <code>UPDATE: 1 row</code>, yet the totals did not move, because 117 was already lapsed. The count is the number of rows the filter matched, which is also how <code>sqlite3</code> counts. When it matters, look at the row afterwards.</p>
+
+  <p>The short version: no <code>WHERE</code> means every row, in every SQL engine. Here it costs one press of undo, or a reload of a file that was never touched. Keep the original either way, as the <a href="../../">editor page</a> says, and if the console ever changes a different number of rows than its <code>SELECT</code> preview showed, write to the address on the <a href="../../contact/">contact page</a> with both statements.</p>
+</article>
+</div>
+
+<footer class="border">
+  <a href="../../">Editor</a>
+  <a href="../../blog/">Guides</a>
+  <a href="../../privacy/">Privacy</a>
+  <a href="../../contact/">Contact</a>
+  <span>opened, edited and rebuilt on your own device — the data never left it. works offline once loaded. © 2026 editsqlite.com</span>
+</footer>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("/sw.js");
+}
+</script>
+</body>
+</html>
